@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>pothole_sim</name>
+  <version>0.0.1</version>
+  <description>Pothole simulation world and generator</description>
+
+  <maintainer email="you@example.com">Your Name</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <!-- This is a Python-based package -->
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>gazebo_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>pothole_interfaces</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+
+  <export>
+    <!-- CRITICAL: tell colcon this is ament_python, not CMake -->
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+

@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="simple_vehicle">
+    <!-- Static for now -->
+    <static>true</static>
+
+    <link name="vehicle_link">
+      <!-- Rough inertial -->
+      <inertial>
+        <mass>800</mass>
+        <inertia>
+          <ixx>100</ixx>
+          <iyy>300</iyy>
+          <izz>350</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+
+      <!-- ===================== COLLISION BODY (x2) ===================== -->
+      <!-- Original: size 1.55 x 0.85 x 1.05, pose z=0.525 -->
+      <!-- New (×2): size 3.10 x 1.70 x 2.10, pose z=1.05 -->
+      <collision name="collision_body">
+        <pose>0 0 1.05 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.10 1.70 2.10</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <!-- ===================== VISUALS: BODY (x2) ===================== -->
+
+      <!-- Lower chassis -->
+      <!-- Original: size 1.55 x 0.85 x 0.35, pose z=0.35 -->
+      <!-- New:      size 3.10 x 1.70 x 0.70, pose z=0.70 -->
+      <visual name="body_lower">
+        <pose>0 0 0.70 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.10 1.70 0.70</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <!-- make it BRIGHT RED so we can SEE that it changed -->
+            <name>Gazebo/Red</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- Upper cabin -->
+      <!-- Original: size 1.10 x 0.65 x 0.70, pose x=0.10, z=0.875 -->
+      <!-- New:      size 2.20 x 1.30 x 1.40, pose x=0.20, z=1.75 -->
+      <visual name="body_upper">
+        <pose>0.20 0 1.75 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>2.20 1.30 1.40</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Yellow</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- Hood -->
+      <!-- Original: size 0.55 x 0.80 x 0.25, pose x=0.45, z=0.55 -->
+      <!-- New:      size 1.10 x 1.60 x 0.50, pose x=0.90, z=1.10 -->
+      <visual name="body_hood">
+        <pose>0.90 0 1.10 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.10 1.60 0.50</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Red</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- ===================== WHEELS (x2, no arches) ===================== -->
+      <!-- Original:
+           wheelbase     = 1.15 -> x = ±0.575
+           track width   ≈ 0.60 -> y = ±0.30
+           wheel radius  = 0.175
+           wheel length  = 0.10
+           z center      = 0.175
+         Scaled ×2:
+           x = ±1.15
+           y = ±0.60
+           radius = 0.35
+           length = 0.20
+           z center = 0.35
+      -->
+
+      <!-- IMPORTANT ORIENTATION:
+           Gazebo cylinder axis = +Z by default.
+           To make wheel axis = +Y (so it rolls in X), rotate +90° about X:
+           roll = +1.5708 rad, pitch=0, yaw=0
+      -->
+
+      <!-- FRONT LEFT wheel (x+, y+) -->
+      <visual name="wheel_fl">
+        <pose>1.15 0.60 0.35 1.5708 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.35</radius>
+            <length>0.20</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- FRONT RIGHT wheel (x+, y-) -->
+      <visual name="wheel_fr">
+        <pose>1.15 -0.60 0.35 1.5708 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.35</radius>
+            <length>0.20</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- REAR LEFT wheel (x-, y+) -->
+      <visual name="wheel_rl">
+        <pose>-1.15 0.60 0.35 1.5708 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.35</radius>
+            <length>0.20</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- REAR RIGHT wheel (x-, y-) -->
+      <visual name="wheel_rr">
+        <pose>-1.15 -0.60 0.35 1.5708 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.35</radius>
+            <length>0.20</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+
+    </link>
+  </model>
+</sdf>
