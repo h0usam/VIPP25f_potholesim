@@ -1,0 +1,17 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    LAUNCH COMMAND - COPY & PASTE
+═══════════════════════════════════════════════════════════════════════════════
+
+cd /home/fyp/ros2_ws && source /opt/ros/humble/setup.bash && source install/setup.bash && export RMW_IMPLEMENTATION=rmw_fastrtps_cpp && ros2 launch pothole_sim full_visualization.launch.py
+
+═══════════════════════════════════════════════════════════════════════════════
+
+This single command launches everything:
+  ✅ Gazebo world with pothole environment
+  ✅ Pothole generator (12 random potholes spawning)
+  ✅ Visualization node (publishing /pothole_markers)
+  ✅ RViz (displaying world + markers + grid)
+
+All integrated in one unified system.
+
+═══════════════════════════════════════════════════════════════════════════════

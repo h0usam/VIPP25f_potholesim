@@ -13,10 +13,6 @@
           </cylinder>
         </geometry>
 
-<scale>1 1 1</scale>
-
-
-        <!-- This scale is irrelevant now; you can keep or remove -->
         <scale>1 1 1</scale>
 
         <material>

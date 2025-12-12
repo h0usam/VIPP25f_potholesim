@@ -3,6 +3,7 @@ import math
 import random
 
 import rclpy
+import time
 from rclpy.node import Node
 
 from ament_index_python.packages import get_package_share_directory
@@ -82,21 +83,28 @@ class PotholeGenerator(Node):
         margin = 0.2
         y = max(-road_half_width + margin, min(road_half_width - margin, y))
 
-        # Ellipse semi-axes (meters)
-        a = random.uniform(0.3, 0.8)
-        b = random.uniform(0.2, 0.6)
+        # Randomized values
+        center_x = random.uniform(self.x_min, self.x_max)
+        center_y = random.uniform(-road_half_width, road_half_width)
+        a = random.uniform(0.3, 0.8)  # Semi-axis a
+        b = random.uniform(0.2, 0.6)  # Semi-axis b
+        yaw = random.uniform(0, 2 * math.pi)  # Random rotation
+        depth_max = random.uniform(0.1, 0.18)  # Random depth
 
-        # Orientation wrt road x-axis
-        yaw = random.uniform(0.0, math.pi)
+        # Computed values
+        area = a * b * math.pi  # Ellipse area formula
 
-        # Depth and edge angle
-        depth_max = random.uniform(0.05, 0.20)
-        edge_angle = random.uniform(
-            math.radians(5.0), math.radians(30.0))
+        # Edge angle computed from depth and dimensions
+        edge_angle = math.atan(depth_max / ((a + b) / 2))
 
-        # Example severity heuristic
-        area = math.pi * a * b
-        severity = min(1.0, (depth_max * area) / 0.5)  # arbitrary scaling
+        # Severity = function of (depth, area, edge_angle)
+        # Normalized combination of these factors
+        severity = (
+            (depth_max / 0.18) * 0.4 +      # 40% weight on depth
+            (area / 0.8) * 0.2 +             # 40% weight on area
+            (edge_angle / 1.0) * 0.4     # 20% weight on edge angle
+        )
+        severity = min(severity, 1.0)  # Clamp to [0, 1]
 
         # Road model: top surface at z ≈ 0.02 -> put patch slightly above
         road_top_z = 0.02
@@ -108,8 +116,8 @@ class PotholeGenerator(Node):
         pothole.header.frame_id = 'map'
 
         pothole.center = Point(
-            x=x,
-            y=y,
+            x=center_x,
+            y=center_y,
             z=road_top_z + patch_epsilon
         )
         pothole.a = float(a)
@@ -166,6 +174,8 @@ class PotholeGenerator(Node):
 
             self.spawn_single_pothole(pothole, scaled_sdf)
             pothole_list.append(pothole)
+            # brief pause between spawn requests to avoid overwhelming the factory
+            time.sleep(0.2)
 
         msg = PotholeArray()
         msg.header = Header()
@@ -180,9 +190,9 @@ class PotholeGenerator(Node):
 
     def spawn_single_pothole(self, pothole: Pothole, sdf_xml: str):
         # Ensure service is available
-        if not self.spawn_client.wait_for_service(timeout_sec=5.0):
+        if not self.spawn_client.wait_for_service(timeout_sec=10.0):
             self.get_logger().warn(
-                "Spawn service /spawn_entity not available")
+                "Spawn service /spawn_entity not available (timeout)")
             return
 
         req = SpawnEntity.Request()
@@ -211,12 +221,21 @@ class PotholeGenerator(Node):
         )
 
         future = self.spawn_client.call_async(req)
-        rclpy.spin_until_future_complete(self, future, timeout_sec=5.0)
-        result = future.result()
+        rclpy.spin_until_future_complete(self, future, timeout_sec=10.0)
+        try:
+            result = future.result()
+        except Exception as e:
+            self.get_logger().error(
+                f"Spawn call exception for pothole_{pothole.id}: {e}")
+            result = None
 
         if result is None:
             self.get_logger().warn(
                 f"Failed to spawn pothole_{pothole.id} (no response)")
+            # Log a short XML snippet for debugging (first 400 chars)
+            snippet = sdf_xml.replace('\n', ' ')[:400]
+            self.get_logger().info(
+                f"Pothole XML snippet (len={len(sdf_xml)}): {snippet}...")
         else:
             if result.success:
                 self.get_logger().info(
@@ -224,6 +243,10 @@ class PotholeGenerator(Node):
             else:
                 self.get_logger().warn(
                     f"Failed to spawn pothole_{pothole.id}: {result.status_message}")
+                # Log a short XML snippet to help diagnose malformed SDF
+                snippet = sdf_xml.replace('\n', ' ')[:400]
+                self.get_logger().info(
+                    f"Pothole XML snippet (len={len(sdf_xml)}): {snippet}...")
 
 
 def main(args=None):

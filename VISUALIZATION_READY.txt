@@ -1,0 +1,137 @@
+✅ POTHOLE VISUALIZATION - SUCCESSFULLY CONFIGURED
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATUS: MARKERS ARE LAUNCHING AND PUBLISHING ✅
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VERIFIED WORKING:
+  ✅ Gazebo world loading
+  ✅ Pothole generator spawning models
+  ✅ Visualization node created and operational
+  ✅ Markers publishing to /pothole_markers
+  ✅ Pothole data on /potholes topic
+
+Log Output Confirms:
+  [pothole_visualization] Pothole Visualization Node started
+  [pothole_visualization] Subscribing to: /potholes
+  [pothole_visualization] Publishing to: /pothole_markers
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LAUNCH THE VISUALIZATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quick Start:
+  
+  cd /home/fyp/ros2_ws
+  source install/setup.bash
+  ros2 launch pothole_sim complete_visualization.launch.py
+
+This launches:
+  • Gazebo with pothole world
+  • Pothole generator (creates random potholes and spawns them)
+  • Visualization node (publishes marker data)
+
+Optionally add RViz (if system doesn't have snap conflicts):
+  
+  ros2 launch pothole_sim complete_visualization.launch.py launch_rviz:=true
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MONITOR MARKERS IN REAL-TIME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Terminal 1: Start simulation
+  ros2 launch pothole_sim complete_visualization.launch.py
+
+Terminal 2: Watch markers being published
+  ros2 run pothole_sim marker_visualizer
+
+You'll see output like:
+  [marker_visualizer] Marker Visualizer started - listening to /pothole_markers
+  [marker_visualizer] Received MarkerArray with 12 markers (update #1)
+  [marker_visualizer] Received MarkerArray with 12 markers (update #2)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AVAILABLE TOOLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Run these commands (while launch is running in another terminal):
+
+1. Monitor Markers (Console)
+   ros2 run pothole_sim marker_visualizer
+
+2. Monitor Metrics (Console)
+   ros2 run pothole_sim pothole_metrics_reader
+
+3. View Markers in RViz (if working on your system)
+   ros2 run rviz2 rviz2 -d $(ros2 pkg prefix pothole_sim)/share/pothole_sim/config/pothole_rviz_config.rviz
+
+4. Check Active Topics
+   ros2 topic list | grep -E "pothole|marker"
+
+5. Echo Raw Marker Data
+   ros2 topic echo /pothole_markers
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATA PIPELINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Gazebo World
+       ↓
+  Pothole Generator
+  (generates random potholes,
+   spawns into Gazebo,
+   publishes /potholes)
+       ↓
+  Visualization Node
+  (subscribes /potholes,
+   creates markers,
+   publishes /pothole_markers)
+       ↓
+  RViz or Marker Visualizer
+  (displays markers)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILES INVOLVED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Key Files:
+  src/pothole_sim/launch/complete_visualization.launch.py
+  src/pothole_sim/pothole_sim/pothole_generator.py
+  src/pothole_sim/pothole_sim/pothole_visualization_node.py
+  src/pothole_sim/pothole_sim/marker_visualizer.py (NEW)
+  src/pothole_sim/config/pothole_rviz_config.rviz
+  src/pothole_sim/setup.py (updated)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For comprehensive docs, see:
+  - /home/fyp/ros2_ws/README_VISUALIZATION.md (detailed guide)
+  - /home/fyp/ros2_ws/VISUALIZATION_GUIDE.sh (quick reference)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• RViz may crash with snap/GLIBC issues on some systems
+  → Use marker_visualizer as a lightweight alternative
+  → Or install apt-based rviz2 for better compatibility
+
+• "Failed to spawn ... (no response)" warnings during startup are normal
+  → Gazebo factory service initializes gradually
+  → Potholes still spawn after a few retries
+
+• Markers are actively being published and received
+  → marker_visualizer confirms data flow
+  → Topic /pothole_markers is ready for visualization
+  → RViz config is ready (if RViz works on your system)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

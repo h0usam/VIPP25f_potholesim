@@ -1,0 +1,5 @@
+std_msgs/Header header
+int32 pothole_id
+string action
+float32 velocity_scale
+geometry_msgs/Polygon avoidance_polygon
